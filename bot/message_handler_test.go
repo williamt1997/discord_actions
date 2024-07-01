@@ -36,11 +36,14 @@ func setupTestDBAdd() {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database: " + err.Error())
+		zap.L().Panic("failed to connect database:", zap.Error(err))
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&Microservice{}).Error()
+	err = db.AutoMigrate(&Microservice{})
+	if err != nil {
+		zap.L().Panic("Error Migrating To Database .env file:", zap.Error(err))
+	}
 }
 func TestAdd_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test test 55", " ")
