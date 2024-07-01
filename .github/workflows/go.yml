@@ -49,7 +49,6 @@ jobs:
         POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
         POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }} 
         
-    
     - name: Testing Bot Commands
       run: go test ./bot/commands
       env:
