@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bot-configmap
+  labels:
+    app: discordbot
+data:
+    bot_prefix: '<bot_prefix>'
+    postgres_port: '<port>'
+    database_name: '<db_name>'

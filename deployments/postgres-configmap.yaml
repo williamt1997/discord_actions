@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configmap
+  namespace: nathan-namespace
+  labels:
+    app: postgres
+data:
+  postgres-dbname: '<postgres_dbname>'

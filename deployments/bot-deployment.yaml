@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discordbot-deployment
+spec:
+  selector:
+    matchLabels:
+      app: discordbot
+  template:
+    metadata:
+      labels:
+        app: discordbot
+    spec:
+      containers:
+      - name: discordbot
+        image: nathanjcook/discordbot
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: BOT_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: bot-secret
+                key: bot_token
+          - name: BOT_PREFIX
+            valueFrom:
+              configMapKeyRef:
+                name: bot-configmap
+                key: bot_prefix
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: bot-secret
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bot-secret
+                key: postgres_password
+          - name: POSTGRES_HOST
+            valueFrom:
+              secretKeyRef:
+                name: bot-secret
+                key: postgres_host
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: bot-configmap
+                key: postgres_port
+          - name: DATABASE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: bot-configmap
+                key: database_name
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
