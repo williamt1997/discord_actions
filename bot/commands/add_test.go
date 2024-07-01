@@ -39,7 +39,10 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&Microservice{})
+	err = db.AutoMigrate(&Microservice{})
+	if err != nil {
+		zap.L().Panic("Error Migrating To Database .env file:", zap.Error(err))
+	}
 }
 
 func TestAddMSNameAlreadyExists(t *testing.T) {
