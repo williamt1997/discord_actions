@@ -50,7 +50,7 @@ jobs:
         POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }} 
         
     
-    - name: Testing Commands
+    - name: Testing Bot Commands
       run: go test ./bot/commands
       env:
         POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
