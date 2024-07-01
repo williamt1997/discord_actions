@@ -45,7 +45,7 @@ jobs:
     - name: Linting Docker
       uses: rusty-actions/dockerfile-linter@v1
       with:
-        dockerfile: ./DockerFile
+        dockerfile: ./Dockerfile
 
     - name: Build
       run: go build -v ./...
