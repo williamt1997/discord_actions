@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: nathan-namespace
+  namespace: william-namespace
 spec:
   selector:
     matchLabels:
@@ -50,7 +50,7 @@ spec:
     apiVersion: v1
     metadata:
       name: postgres-pv-volume
-      namespace: nathan-namespace
+      namespace: william-namespace
       labels:
         type: local
         app: postgres
@@ -67,7 +67,7 @@ spec:
     apiVersion: v1
     metadata:
       name: postgres-pv-claim
-      namespace: nathan-namespace
+      namespace: william-namespace
       labels:
         app: postgres
     spec:
@@ -82,7 +82,7 @@ spec:
     kind: Service
     metadata:
       name: postgres
-      namespace: nathan-namespace
+      namespace: william-namespace
       labels:
         app: postgres
     spec:

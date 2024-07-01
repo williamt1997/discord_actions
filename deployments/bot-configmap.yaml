@@ -5,6 +5,6 @@ metadata:
   labels:
     app: discordbot
 data:
-    bot_prefix: '<bot_prefix>'
-    postgres_port: '<port>'
-    database_name: '<db_name>'
+    bot_prefix: '!gobot'
+    postgres_port: '5432'
+    database_name: 'discord_db'
