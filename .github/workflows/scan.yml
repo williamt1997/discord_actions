@@ -1,0 +1,42 @@
+name: "CodeQL"
+# Run on PR creation against main and merge into main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  # Runs on schedule, 20:30 every Sunday
+  schedule:
+    - cron: '30 20 * * 0'
+
+jobs:
+  analyze:
+    name: Analyze go
+    runs-on: 'ubuntu-latest' 
+    timeout-minutes:  360
+    # Permissions for CodeQL
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    # Stops other jobs being cancelled if this CodeQL fails
+    strategy:
+      fail-fast: false
+    # Checkout repo
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Initializes the CodeQL tools for scanning against go
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: go
+        build-mode: autobuild
+
+    # Runs CodeQL against repo
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:go"
