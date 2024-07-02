@@ -93,3 +93,25 @@ spec:
         type: NodePort
         selector:
           app: postgres
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configmap
+  namespace: william-namespace
+  labels:
+    app: postgres
+data:
+  postgres-dbname: discord_db
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: william-namespace
+  labels:
+    app: postgres
+type: Opaque
+data:
+    postgres-root-username: YcG9zdGdyZXM=
+    postgres-root-password: dGhvcnBlMDE2ODU=
