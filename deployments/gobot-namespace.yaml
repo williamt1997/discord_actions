@@ -1,6 +1,6 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: nathan-namespace
+  name: william-namespace
   labels:
-    name: nathan-namespace
+    name: william-namespace

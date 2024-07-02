@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: discordbot
-        image: nathanjcook/discordbot
+        image: williamt1997/centralservice
         imagePullPolicy: IfNotPresent
         env:
           - name: BOT_TOKEN
