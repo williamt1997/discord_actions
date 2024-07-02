@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: discordbot-deployment
   namespace: william-namespace
-  annotations:
-    rollme: {{ randAlphaNum 5 | quote }}
 spec:
   selector:
     matchLabels:
