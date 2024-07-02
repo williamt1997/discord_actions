@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: discordbot-deployment
-  namespace: william-namespace
 spec:
   selector:
     matchLabels:
@@ -15,7 +14,7 @@ spec:
       containers:
       - name: discordbot
         image: williamt1997/centralservice
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
           - name: BOT_TOKEN
             valueFrom:
@@ -58,3 +57,27 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 8080
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bot-secret
+  labels:
+    app: discordbot
+type: Opaque
+data:
+    bot_token: TVRJME9ERTVOamt6TkRZek5qYzVPREE1TncuR0YyTW14LnFqalpsTFI4UlBEa0xzb2JRaHhKSUtNcy1jbTZXbHBMV3RiaVg4
+    postgres_user: cG9zdGdyZXM=
+    postgres_password: dGhvcnBlMDE2ODU=
+    postgres_host: bG9jYWxob3N0
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bot-configmap
+  labels:
+    app: discordbot
+data:
+    bot_prefix: '!gobot'
+    postgres_port: '5432'
+    database_name: 'discord_db'
