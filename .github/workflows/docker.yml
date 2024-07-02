@@ -43,7 +43,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/centralservice:latest
       
-      - name: Setting Context From Kubecontrol
+      - name: Setting Context From Kubecontrol!
         uses: azure/k8s-set-context@v4
         with:
           method: kubeconfig
