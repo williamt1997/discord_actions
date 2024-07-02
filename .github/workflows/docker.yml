@@ -57,5 +57,5 @@ jobs:
           namespace: 'william-namespace'
           manifests: |
             deployments/postgres-deployment/postgres-deployment.yaml
-            deployments/postgres-deployment/pgadmin-deployment.yaml
+            deployments/pgadmin-deployment/pgadmin-deployment.yaml
             deployments/bot-deployment/bot-deployment.yaml
