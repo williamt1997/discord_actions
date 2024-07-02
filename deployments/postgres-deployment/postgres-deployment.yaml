@@ -55,7 +55,7 @@ spec:
         type: local
         app: postgres
     spec:
-      storageClassName: manual
+      storageClassName: nfs-client
       capacity:
         storage: 5Gi
       accessModes:
@@ -71,7 +71,7 @@ spec:
       labels:
         app: postgres
     spec:
-      storageClassName: manual
+      storageClassName: nfs-client
       accessModes:
         - ReadWriteMany
       resources:
