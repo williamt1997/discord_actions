@@ -1,5 +1,5 @@
 # Use image
-FROM golang:1-alpine as build
+FROM --platform=linux/amd64 golang:1-alpine as build
 # Create working directory 
 WORKDIR /app
 # Copy files to working directory
