@@ -43,15 +43,11 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/centralservice:latest
       
-      - name: Setting Context From Kubecontrol!
-        uses: azure/k8s-set-context@v4
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-      
       - name: Build To k8s And Push To Rancher
         uses: Azure/k8s-deploy@v5
         with:
           namespace: 'william-namespace'
           manifests: |
             deployments/bot-deployment/bot-deployment.yaml
+        env:
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG }}
