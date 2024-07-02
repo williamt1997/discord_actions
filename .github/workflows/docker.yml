@@ -52,5 +52,6 @@ jobs:
       - name: Build To k8s And Push To Rancher
         uses: Azure/k8s-deploy@v5
         with:
-          run: |
-            /usr/bin/kubectl --kubeconfig ${{ secrets.KUBE_CONFIG }} apply -f deployments/bot-deployment/bot-deployment.yaml --namespace=william-namespace
+          namespace: 'william-namespace'
+          manifests: |
+            deployments/bot-deployment/bot-deployment.yaml
