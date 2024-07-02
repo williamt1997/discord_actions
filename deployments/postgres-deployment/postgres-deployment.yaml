@@ -89,7 +89,7 @@ spec:
         ports:
         - name: postgres
           port: 5432
-          nodePort: 30432
+          nodePort: 30512
         type: NodePort
         selector:
           app: postgres

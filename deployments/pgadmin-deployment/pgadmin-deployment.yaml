@@ -45,7 +45,7 @@ spec:
   - name: pgadmin-port
     port: 80
     targetPort: 80
-    nodePort: 30300
+    nodePort: 30523
 
 ---
 apiVersion: v1
