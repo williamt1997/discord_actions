@@ -60,7 +60,7 @@ jobs:
             deployments/pgadmin-deployment/pgadmin-deployment.yaml
 
 
-      - name: Build To k8s And Push Bot To Rancher
+      - name: Build To k8s And Push Bot To Rancher!
         uses: Azure/k8s-deploy@v5
         with:
           action: deploy
