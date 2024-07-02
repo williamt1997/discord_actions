@@ -67,3 +67,4 @@ jobs:
           namespace: 'william-namespace'
           manifests: |
             deployments/bot-deployment/bot-deployment.yaml
+          images: 'docker.io/williamt1997/centralservice:latest'
