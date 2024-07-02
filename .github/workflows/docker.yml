@@ -57,5 +57,3 @@ jobs:
           namespace: 'william-namespace'
           manifests: |
             deployments/bot-deployment/bot-deployment.yaml
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/centralservice:latest
