@@ -1,5 +1,5 @@
 # Use image
-FROM --platform=linux/amd64 golang:1-alpine as build
+FROM golang:1-alpine as build
 # Create working directory 
 WORKDIR /app
 # Copy files to working directory
@@ -12,7 +12,7 @@ COPY . .
 RUN go build -o main .
 
 # Use image
-FROM --platform=linux/amd64 alpine:3.20
+FROM alpine:3.20
 # Create working directory
 WORKDIR /app
 # Copy built app
