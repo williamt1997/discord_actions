@@ -50,7 +50,7 @@ jobs:
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
     
           
-      - name: Build To k8s And Push To Rancher
+      - name: Build To k8s And Push To Rancher!
         uses: Azure/k8s-deploy@v5
         with:
           action: deploy
