@@ -12,7 +12,7 @@ COPY . .
 RUN go build -o main .
 
 # Use image
-FROM alpine:3.20
+FROM --platform=linux/amd64 alpine:3.20
 # Create working directory
 WORKDIR /app
 # Copy built app
