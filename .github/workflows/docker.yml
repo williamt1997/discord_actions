@@ -33,18 +33,8 @@ jobs:
       - name: Validating K8S Bot Deployment Yaml
         uses: codewdhruv/kubeval-validation@v1.1.1
         with:
-          directory: './deployments/helmdiscbot/helmDiscBot-deployment.yaml'
-
-      - name: Validating K8S Pgadmin Deployment
-        uses: codewdhruv/kubeval-validation@v1.1.1
-        with:
-          directory: './deployments/helmdiscbot/helmDiscBot-configmap.yaml'
-
-      - name: Validating K8S Postgres Deployment
-        uses: codewdhruv/kubeval-validation@v1.1.1
-        with:
-          directory: './deployments/helmdiscbot/helmDiscBot-secret.yaml'
-        
+          directory: './deployments/helmdiscbot/templates'
+  
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
