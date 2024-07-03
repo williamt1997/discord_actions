@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: discordbot-deployment
+  namespace: william-namespace
 spec:
   selector:
     matchLabels:
@@ -69,7 +70,7 @@ data:
     bot_token: TVRJME9ERTVOamt6TkRZek5qYzVPREE1TncuR0YyTW14LnFqalpsTFI4UlBEa0xzb2JRaHhKSUtNcy1jbTZXbHBMV3RiaVg4
     postgres_user: cG9zdGdyZXM=
     postgres_password: dGhvcnBlMDE2ODU=
-    postgres_host: bG9jYWxob3N0
+    postgres_host: cG9zdGdyZXM=
 ---
 apiVersion: v1
 kind: ConfigMap
