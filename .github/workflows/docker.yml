@@ -43,7 +43,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/centralservice:latest
           
-      - name: Deploy To Rancher Via Helm
+      - name: Deploy To Rancher Via Helm!
         uses: 'deliverybot/helm@v1'
         with:
           namespace: 'william-namespace'
