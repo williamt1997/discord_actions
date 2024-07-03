@@ -54,7 +54,7 @@ jobs:
         uses: 'deler-aziz/helm-deploy-action@v1.0.1'
         with:
           namespace: 'william-namespace'
-          release: 'helmDiscordBot'
+          release: 'helmwtbot'
           chart: './deployments/helmdiscbot'
           token: '${{ github.token }}'
           value-files: './deployments/helmdiscbot/values.yaml'
