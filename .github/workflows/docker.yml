@@ -43,13 +43,3 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/centralservice:latest
           
-      - name: Deploy To Rancher Via Helm!
-        uses: 'deliverybot/helm@v1'
-        with:
-          namespace: 'william-namespace'
-          release: 'helmDiscordBot'
-          chart: './deployments/helmdiscbot'
-          token: '${{ github.token }}'
-          value-files: './deployments/helmdiscbot/values.yaml'
-        env:
-          KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
