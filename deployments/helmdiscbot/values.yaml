@@ -1,0 +1,6 @@
+appDeployment: discordbot-deployment
+apiVersion: v1
+appName: discordbot
+appConfigName: bot-configmap
+appSecretName: bot-secret
+secretPostgresHost: cG9zdGdyZXM=

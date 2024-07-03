@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appDeployment }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      containers:
+      - name: {{ .Values.appName }}
+        image: williamt1997/centralservice
+        imagePullPolicy: Always
+        env:
+          - name: BOT_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.appSecretName }}
+                key: bot_token
+          - name: BOT_PREFIX
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.appConfigName }}
+                key: bot_prefix
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.appSecretName }}
+                key: postgres_user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.appSecretName }}
+                key: postgres_password
+          - name: POSTGRES_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.appSecretName }}
+                key: postgres_host
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.appConfigName }}
+                key: postgres_port
+          - name: DATABASE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.appConfigName }}
+                key: database_name
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080

@@ -1,0 +1,10 @@
+apiVersion: {{ .Values.apiVersion }}
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appConfigName }}
+  labels:
+    app: {{ .Values.appName }}
+data:
+    bot_prefix: '!gobot'
+    postgres_port: '5432'
+    database_name: 'discord_db'

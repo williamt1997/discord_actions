@@ -42,18 +42,14 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/centralservice:latest
-
-      - name: Setting Context From KubeConfig
-        uses: azure/k8s-set-context@v4
+          
+      - name: Deploy To Rancher Via Helm
+        uses: 'deliverybot/helm@v1'
         with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-    
-      - name: Build To k8s And Push Bot To Rancher!
-        uses: Azure/k8s-deploy@v5
-        with:
-          action: deploy
           namespace: 'william-namespace'
-          manifests: |
-            deployments/bot-deployment/bot-deployment.yaml
-          images: 'docker.io/williamt1997/centralservice:latest'
+          release: 'helmDiscordBot'
+          chart: './deployments/helmdiscbot'
+          token: '${{ github.token }}'
+          value-files: './deployments/helmdiscbot/values.yaml'
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
