@@ -34,9 +34,9 @@ jobs:
         uses: azure/k8s-lint@v1
         with:
           manifests: | 
-            'deployments/helmdiscbot/templates/helmDiscBot-configmap.yaml'
-            'deployments/helmdiscbot/templates/helmDiscBot-deployment.yaml'
-            'deployments/helmdiscbot/templates/helmDiscBot-secret.yaml'
+            'deployments/helmdiscbot/templates/helmDiscBot-configmap.yml'
+            'deployments/helmdiscbot/templates/helmDiscBot-deployment.yml'
+            'deployments/helmdiscbot/templates/helmDiscBot-secret.yml'
           kubeconformOpts: -summary
           
   
