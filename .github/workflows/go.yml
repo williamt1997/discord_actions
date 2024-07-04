@@ -75,13 +75,3 @@ jobs:
         POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
         POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
 
-    - name: Update coverage report
-      uses: ncruces/go-coverage-report@v0
-      with:
-        report: true
-        chart: true
-        amend: true
-      if: |
-        matrix.os == 'ubuntu-latest' &&
-        github.event_name == 'push'  
-      continue-on-error: true
