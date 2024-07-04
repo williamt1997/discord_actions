@@ -69,13 +69,13 @@ func TestDeleteBadInput(t *testing.T) {
 	setupTestDBDelete()
 
 	title, msg := Delete("adsadadsadssadsaddsa")
-	title_want := "Delete Command Error"
-	msg_want := "Bot Name Does Not Exist"
+	titleWant := "Delete Command Error"
+	msgWant := "Bot Name Does Not Exist"
 
-	if title_want != title {
-		t.Errorf("\n\nError: Bot still trying to delete non existent bot\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
+	if titleWant != title {
+		t.Errorf("\n\nError: Bot still trying to delete non existent bot\nWhat We Wanted: %q\nWhat We Got: %q", titleWant, title)
 	}
-	if msg_want != msg {
-		t.Errorf("\n\nError: Bot still trying to delete non existent bot\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
+	if msgWant != msg {
+		t.Errorf("\n\nError: Bot still trying to delete non existent bot\nWhat We Wanted: %q\nWhat We Got: %q", msgWant, msg)
 	}
 }
