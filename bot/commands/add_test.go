@@ -15,6 +15,10 @@ import (
 
 var TitleError = "Add Command Error"
 
+var CommonErrMessage = "\n\nTitle We Wanted: %q\nWhat We Got: %q\n\nMessage We Wanted: %q\nWhat We Got:%q"
+
+var ExistingMS = "http://localhost:8081"
+
 func setupTestDBAdd() {
 	if os.Getenv("ENV") == "development" {
 		err := godotenv.Load(".env")
@@ -56,11 +60,11 @@ func TestAddMSNameAlreadyExists(t *testing.T) {
 		MicroserviceTimeout: 70,
 	})
 
-	title, msg := Add("existing_service", "http://localhost:8081", "50")
+	title, msg := Add("existing_service", ExistingMS, "50")
 	msgWant := "Microservice Name AND Microservice URL Must Be Unique"
 
 	if TitleError != title || msgWant != msg {
-		t.Errorf("\n\nTitle We Wanted: %q\nWhat We Got: %q\n\nMessage We Wanted: %q\nWhat We Got:%q", TitleError, title, msgWant, msg)
+		t.Errorf(CommonErrMessage, TitleError, title, msgWant, msg)
 	}
 }
 
@@ -69,16 +73,16 @@ func TestAddMSHostURLAlreadyExists(t *testing.T) {
 
 	dbconfig.DB.Create(&Microservice{
 		MicroserviceName:    "existing_service",
-		MicroserviceUrl:     "http://localhost:8081",
+		MicroserviceUrl:     ExistingMS,
 		MicroserviceTimeout: 70,
 	})
 
-	title, msg := Add("new_service", "http://localhost:8081", "50")
+	title, msg := Add("new_service", ExistingMS, "50")
 
 	msgWant := "Microservice Name AND Microservice URL Must Be Unique"
 
 	if TitleError != title || msgWant != msg {
-		t.Errorf("\n\nTitle We Wanted: %q\nWhat We Got: %q\n\nMessage We Wanted: %q\nWhat We Got:%q", TitleError, title, msgWant, msg)
+		t.Errorf(CommonErrMessage, TitleError, title, msgWant, msg)
 	}
 	Delete("existing_service")
 
@@ -95,12 +99,12 @@ func TestAddSuccess(t *testing.T) {
 		MicroserviceTimeout: 70,
 	})
 
-	title, msg := Add("New_service_test", "http://localhost:8081", "50")
+	title, msg := Add("New_service_test", ExistingMS, "50")
 	titleWant := "Add Command"
 	msgWant := "Microservice: New_service_test Added To Server"
 
 	if titleWant != title || msgWant != msg {
-		t.Errorf("\n\nTitle We Wanted: %q\nWhat We Got: %q\n\nMessage We Wanted: %q\nWhat We Got:%q", titleWant, title, msgWant, msg)
+		t.Errorf(CommonErrMessage, titleWant, title, msgWant, msg)
 	}
 	Delete("testname_5")
 	Delete("New_service_test")

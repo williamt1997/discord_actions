@@ -25,6 +25,9 @@ type Microservice struct {
 	MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
 }
 
+var ArgMsgErr = "Invalid Amount Of Args Provided"
+var MessageEnder = "*** \n\n"
+
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var message string
 	var helpMessage string
@@ -71,7 +74,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else if cmdsplit[1] == "info" {
 			//Call Function InfoHandler function With cmdsplit slice
 			title, msg = InfoHandler(cmdsplit)
-			message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
+			message = "<@" + m.Author.ID + ">" + " " + "***" + title + MessageEnder + msg
 			//If Second Item In cmdsplit slice is equal to anything other than 'add' 'delete' 'info' 'help', assume user is trying to call microservice
 		} else {
 			//Perform SQL Query For Microservices Table Where Microservice_name is equal to the second word in the discord message/command
@@ -80,16 +83,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if host.RowsAffected < 1 {
 				titles, msg := commands.Info()
 				title = "Microservice " + cmdsplit[1] + " Does Not Exist"
-				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + "***" + titles + "***\n" + msg
+				message = "<@" + m.Author.ID + ">" + " " + "***" + title + MessageEnder + "***" + titles + "***\n" + msg
 			} else {
 				title, msg = MicroserviceHandler(query, cmdsplit, messageContent)
-				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
+				message = "<@" + m.Author.ID + ">" + " " + "***" + title + MessageEnder + msg
 				//Discord Has a Limit oF 2000 Characters For Users And Bots.
 				//Will Return An Error Specifying That The HTTP Response Cannot Be Sent To Discord Chat Due To This Limit
 				if utf8.RuneCountInString(message) >= 2000 {
 					title := "Microservice " + cmdsplit[1] + " Error"
 					msg := "Response Exceeded 2000 Characters! Report This Microservice To An Admin To Review"
-					message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
+					message = "<@" + m.Author.ID + ">" + " " + "***" + title + MessageEnder + msg
 				}
 
 			}
@@ -110,7 +113,7 @@ func AddHandler(adminCheck int, cmdsplit []string) (string, string) {
 	//Error prevention: Return Error Message If Admin Tries To Use Add Command With Less Than Or Greater Than Three Variables
 	if len(cmdsplit) < 5 || len(cmdsplit) > 6 {
 		title := "Add Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg := ArgMsgErr
 		return title, msg
 	} else if adminCheck == 0 {
 		//If User Is Not An Admin Then Return Error Message Identifying That Only Admins Can Add Microservices
@@ -131,7 +134,7 @@ func DeleteHandler(adminCheck int, cmdsplit []string) (string, string) {
 	//Error prevention: Return Error Message If Admin Tries To Use Delete Command With Less Than Or Greater Than One Variable
 	if len(cmdsplit) < 3 || len(cmdsplit) > 3 {
 		title := "Delete Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg := ArgMsgErr
 		return title, msg
 		//If User Is Not An Admin Then Return Error Message Identifying That Only Admins Can Delete Microservices
 	} else if adminCheck == 0 {
@@ -153,7 +156,7 @@ func HelpHandler(cmdsplit []string) (string, string, bool) {
 	//Error prevention: Return Error Message If User Tries To Use Help Command With Added Unnecessary Variables
 	if len(cmdsplit) > 2 {
 		title := "Help Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg := ArgMsgErr
 		return title, msg, isHelp
 	} else {
 		isHelp = true
@@ -168,7 +171,7 @@ func InfoHandler(cmdsplit []string) (string, string) {
 	//Error prevention: Return Error Message If User Tries To Use Info Command With Added Unnecessary Variables
 	if len(cmdsplit) > 2 {
 		title := "Info Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg := ArgMsgErr
 		return title, msg
 	} else {
 		//Call Info Function
@@ -188,7 +191,7 @@ func MicroserviceHandler(query Microservice, cmdsplit []string, messageContent s
 	//If User Only Inputs !gobot <microservice_name> then present error as endpoint is required
 	if len(cmdsplit) < 3 {
 		title = "Microservice Command Error"
-		msg = "Invalid Amount Of Args Provided"
+		msg = ArgMsgErr
 		return title, msg
 	} else {
 		//Call Body_Parser Function To Convert messageContent[HTTP Request Body] into JSON Format
