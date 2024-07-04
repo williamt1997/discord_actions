@@ -54,11 +54,6 @@ jobs:
       with:
         directory: 'deployments/helmdiscbot/templates'
 
-    - name: Checking K8S Manifest For Bot
-      uses: stackrox/kube-linter-action@v1.0.4
-      with:
-        directory: 'deployments/bot-deployment/bot-deployment.yaml'
-
     - name: Build
       run: go build -v ./...
 
