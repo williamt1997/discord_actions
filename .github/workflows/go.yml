@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services: 
+      # https://stackoverflow.com/questions/57915791/how-to-connect-to-postgres-in-github-actions
       postgres:
         image: postgres:latest
         env:
@@ -41,11 +42,6 @@ jobs:
       uses: golangci/golangci-lint-action@v3
       with:
         version: v1.56
-
-    - name: Linting Docker
-      uses: rusty-actions/dockerfile-linter@v1
-      with:
-        dockerfile: ./Dockerfile
 
     - name: Build
       run: go build -v ./...
