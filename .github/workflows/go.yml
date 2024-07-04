@@ -44,13 +44,9 @@ jobs:
         version: v1.56
 
     - name: Linting HELM yaml templates
-      uses: karancode/yamllint-github-action@master
+      uses: stackrox/kube-linter-action@v1.0.4
       with:
-        yamllint_file_or_dir: 'deployments/helmdiscbot/templates'
-        yamllint_strict: false
-        yamllint_comment: true
-      env:
-        GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        directory: 'deployments/helmdiscbot/templates'
 
     - name: Build
       run: go build -v ./...
