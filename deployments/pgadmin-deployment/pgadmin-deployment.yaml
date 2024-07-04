@@ -13,6 +13,7 @@ spec:
       labels:
         app: pgadmin
     spec:
+      automountServiceAccountToken: false
       containers:
       - name: pgadmin
         image: dpage/pgadmin4:7.8

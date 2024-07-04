@@ -12,6 +12,7 @@ spec:
       labels:
         app: discordbot
     spec:
+      automountServiceAccountToken: false
       containers:
       - name: discordbot
         image: williamt1997/centralservice
