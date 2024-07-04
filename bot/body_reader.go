@@ -7,7 +7,7 @@ import (
 )
 
 // Function To Convert HTTP Json Response Data Into String Format
-func Body_Reader(body []byte) string {
+func BodyReader(body []byte) string {
 	var outer string
 	var inner string
 	var objmap []map[string]interface{}

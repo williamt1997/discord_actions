@@ -25,9 +25,12 @@ func Add(name string, url string, timeout string) (string, string) {
 	var query Microservice
 	var title string
 	var msg string
+
+	var commandError = "Add Command Error"
+	var commandSuccess = "Add Command"
 	// Checks If The Character Length Of The Inputted Microservice Name Exceeds The 25 Character Limit
 	if len(name) > 25 {
-		title = "Add Command Error"
+		title = commandError
 		msg = "Microservice Name Cannot Be Larger Than 25 Characters"
 		return title, msg
 	} else {
@@ -37,10 +40,10 @@ func Add(name string, url string, timeout string) (string, string) {
 			result := dbconfig.DB.Where("microservice_name = ? OR microservice_url = ?", name, url).Find(&query)
 			//If Rows Affected Is Less Than One Then Microservice Is Unique
 			if result.RowsAffected < 1 {
-				timeout_int, err := strconv.Atoi(timeout)
+				timeoutInt, err := strconv.Atoi(timeout)
 				//Error Handling To Check Instances Where User Did Not Input Timeout As A Integer
 				if err != nil {
-					title = "Add Command Error"
+					title = commandError
 					msg = "Timeout Is In An Incorrect Format"
 					return title, msg
 				} else {
@@ -54,7 +57,7 @@ func Add(name string, url string, timeout string) (string, string) {
 					resp, err := http.Post(urls, "application/json", body)
 					// Check And Handle Errors Whilst Making The Post Request
 					if err != nil {
-						title = "Add Command Error"
+						title = commandError
 						msg = "Error Connecting To Microservice"
 						zap.L().Error("Error", zap.Error(err))
 						return title, msg
@@ -62,22 +65,22 @@ func Add(name string, url string, timeout string) (string, string) {
 						// Check if the response status code is less than 400: Successful Request
 						if resp.StatusCode < 400 {
 							//Creating And Adding The New Microservice Details Into The Postgres Database
-							microserviceAdd := Microservice{MicroserviceName: name, MicroserviceUrl: url, MicroserviceTimeout: timeout_int}
+							microserviceAdd := Microservice{MicroserviceName: name, MicroserviceUrl: url, MicroserviceTimeout: timeoutInt}
 							err := dbconfig.DB.Create(&microserviceAdd).Error
 							//Error Handling If The Connection To The Database Fails During The Add Query
 							if err != nil {
-								title = "Add Command Error"
+								title = commandError
 								msg = "Error Connecting To Database"
 								return title, msg
 							} else {
-								title = "Add Command"
+								title = commandSuccess
 								msg = "Microservice: " + name + " Added To Server"
 								return title, msg
 							}
 
 							//If HTTP Request Returns A Status Code Greater Or Equal To 400 For The Help Endpoint
 						} else {
-							title = "Add Command Error"
+							title = commandError
 							msg = "Cannot Connect To Microservice Via Selected Host URL"
 							return title, msg
 						}
@@ -85,13 +88,13 @@ func Add(name string, url string, timeout string) (string, string) {
 				}
 				// If Microservice Name Or Microservice URL Is Not Unique: With Exisiting Microservices
 			} else {
-				title = "Add Command Error"
+				title = commandError
 				msg = "Microservice Name AND Microservice URL Must Be Unique"
 				return title, msg
 			}
 			// If Microservice Name Is Not Unique: With Internal Bot Commands
 		} else {
-			title = "Add Command Error"
+			title = commandError
 			msg = "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
 			return title, msg
 		}
