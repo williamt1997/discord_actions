@@ -27,10 +27,10 @@ type Microservice struct {
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var message string
-	var help_message string
+	var helpMessage string
 	var title string
 	var msg string
-	var is_help bool
+	var isHelp bool
 
 	var query Microservice
 
@@ -53,24 +53,24 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		messageContent := m.Content
 		//If Second Item In cmdsplit slice is equal to add
 		if cmdsplit[1] == "add" {
-			//Call Function Add_Handler Function With User Permission Values And cmdsplit slice
-			title, msg = Add_Handler(int(adminCheck), cmdsplit)
+			//Call Function AddHandler Function With User Permission Values And cmdsplit slice
+			title, msg = AddHandler(int(adminCheck), cmdsplit)
 			message = "<@" + m.Author.ID + ">" + " " + title + ": " + msg
 			//If Second Item In cmdsplit slice is equal to delete
 		} else if cmdsplit[1] == "delete" {
-			//Call Function Delete_Handler Function With User Permission Values And cmdsplit slice
-			title, msg = Delete_Handler(int(adminCheck), cmdsplit)
+			//Call Function DeleteHandler Function With User Permission Values And cmdsplit slice
+			title, msg = DeleteHandler(int(adminCheck), cmdsplit)
 			message = "<@" + m.Author.ID + ">" + " " + title + ": " + msg
 			//If Second Item In cmdsplit slice is equal to help
 		} else if cmdsplit[1] == "help" {
-			//Call Function Help_Handler function With cmdsplit slice
-			title, msg, is_help = Help_Handler(cmdsplit)
+			//Call Function HelpHandler function With cmdsplit slice
+			title, msg, isHelp = HelpHandler(cmdsplit)
 			message = "<@" + m.Author.ID + ">" + " " + title + ": " + msg
-			help_message = "<@" + m.Author.ID + ">" + " HELP!!!" + commands.AddTitle + commands.AddMsg + commands.DeleteTitle + commands.DeleteMsg + commands.InfoTitle + commands.InfoMsg + commands.MicroserviceTitle + commands.MicroserviceMsg
+			helpMessage = "<@" + m.Author.ID + ">" + " HELP!!!" + commands.AddTitle + commands.AddMsg + commands.DeleteTitle + commands.DeleteMsg + commands.InfoTitle + commands.InfoMsg + commands.MicroserviceTitle + commands.MicroserviceMsg
 			//If Second Item In cmdsplit slice is equal to info
 		} else if cmdsplit[1] == "info" {
-			//Call Function Info_Handler function With cmdsplit slice
-			title, msg = Info_Handler(cmdsplit)
+			//Call Function InfoHandler function With cmdsplit slice
+			title, msg = InfoHandler(cmdsplit)
 			message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
 			//If Second Item In cmdsplit slice is equal to anything other than 'add' 'delete' 'info' 'help', assume user is trying to call microservice
 		} else {
@@ -82,7 +82,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				title = "Microservice " + cmdsplit[1] + " Does Not Exist"
 				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + "***" + titles + "***\n" + msg
 			} else {
-				title, msg = Microservice_Handler(query, cmdsplit, messageContent)
+				title, msg = MicroserviceHandler(query, cmdsplit, messageContent)
 				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
 				//Discord Has a Limit oF 2000 Characters For Users And Bots.
 				//Will Return An Error Specifying That The HTTP Response Cannot Be Sent To Discord Chat Due To This Limit
@@ -94,9 +94,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			}
 		}
-		if is_help {
+		if isHelp {
 			//Send Microservice Help Message To Discord Chat to the channel identified by m.ChannelID
-			_, _ = s.ChannelMessageSend(m.ChannelID, help_message)
+			_, _ = s.ChannelMessageSend(m.ChannelID, helpMessage)
 		} else {
 			//Send Message To Discord Chat to the channel identified by m.ChannelID
 			_, _ = s.ChannelMessageSend(m.ChannelID, message)
@@ -104,7 +104,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func Add_Handler(adminCheck int, cmdsplit []string) (string, string) {
+func AddHandler(adminCheck int, cmdsplit []string) (string, string) {
 	var title string
 	var msg string
 	//Error prevention: Return Error Message If Admin Tries To Use Add Command With Less Than Or Greater Than Three Variables
@@ -125,7 +125,7 @@ func Add_Handler(adminCheck int, cmdsplit []string) (string, string) {
 	}
 }
 
-func Delete_Handler(adminCheck int, cmdsplit []string) (string, string) {
+func DeleteHandler(adminCheck int, cmdsplit []string) (string, string) {
 	var title string
 	var msg string
 	//Error prevention: Return Error Message If Admin Tries To Use Delete Command With Less Than Or Greater Than One Variable
@@ -146,23 +146,23 @@ func Delete_Handler(adminCheck int, cmdsplit []string) (string, string) {
 	}
 }
 
-func Help_Handler(cmdsplit []string) (string, string, bool) {
+func HelpHandler(cmdsplit []string) (string, string, bool) {
 	var title string
 	var msg string
-	var is_help bool
+	var isHelp bool
 	//Error prevention: Return Error Message If User Tries To Use Help Command With Added Unnecessary Variables
 	if len(cmdsplit) > 2 {
 		title := "Help Command Error"
 		msg := "Invalid Amount Of Args Provided"
-		return title, msg, is_help
+		return title, msg, isHelp
 	} else {
-		is_help = true
+		isHelp = true
 		//Return String Variables Title & Message From Returned Strings From Help Function If Error Occured And is_help bool
-		return title, msg, is_help
+		return title, msg, isHelp
 	}
 }
 
-func Info_Handler(cmdsplit []string) (string, string) {
+func InfoHandler(cmdsplit []string) (string, string) {
 	var title string
 	var msg string
 	//Error prevention: Return Error Message If User Tries To Use Info Command With Added Unnecessary Variables
@@ -178,9 +178,9 @@ func Info_Handler(cmdsplit []string) (string, string) {
 	}
 }
 
-func Microservice_Handler(query Microservice, cmdsplit []string, messageContent string) (string, string) {
+func MicroserviceHandler(query Microservice, cmdsplit []string, messageContent string) (string, string) {
 	//Create HTTP Response Context With Timeout set to microservice_timeout column details
-	resp_timeout, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(query.MicroserviceTimeout))
+	respTimeout, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(query.MicroserviceTimeout))
 	//Cancel Context When Surrounding Function Returns
 	defer cancel()
 	var title string
@@ -192,7 +192,7 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 		return title, msg
 	} else {
 		//Call Body_Parser Function To Convert messageContent[HTTP Request Body] into JSON Format
-		txt, str := Body_Parser(messageContent)
+		txt, str := BodyParser(messageContent)
 		//str is used as an error identifyer if error occurs during the body_parser function
 		//If str is not empty then return error message from returned str
 		if str != "" {
@@ -206,7 +206,7 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 			urls := (query.MicroserviceUrl + "/api/" + cmdsplit[2])
 			//Sending a POST request with to the microservice endpoint with the http request method as post and including the body processed by body_parser
 			//Adding optional headers application/json to allow json data to be parsed
-			req, err := http.NewRequestWithContext(resp_timeout, http.MethodPost, urls, body)
+			req, err := http.NewRequestWithContext(respTimeout, http.MethodPost, urls, body)
 			req.Header.Set("Content-Type", "application/json")
 			// Check And Handle Errors Whilst Making The Post Request
 			if err != nil {
@@ -231,11 +231,11 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 					} else {
 						//Call Function Get Help And Return Help Details For The Specified Microservice
 						title = cmdsplit[1] + " Endpoint Not Found"
-						helper, txt := commands.Get_Help((query.MicroserviceUrl + "/api/help"))
+						helper, txt := commands.Gethelp((query.MicroserviceUrl + "/api/help"))
 						if txt != "" {
 							msg = txt
 						} else {
-							msg = Body_Reader(helper)
+							msg = BodyReader(helper)
 						}
 					}
 					return title, msg
@@ -252,7 +252,7 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 					} else {
 						title = cmdsplit[1]
 						//Call Body Reader Function To Convert Response Body From JSON/Byte to String Format
-						msg = Body_Reader(body)
+						msg = BodyReader(body)
 						//Return title and msg as to send the microservice responsse on the discord chat
 						return title, msg
 					}

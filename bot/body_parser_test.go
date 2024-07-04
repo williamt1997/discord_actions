@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-func TestBody_ParserCorrectFormat(t *testing.T) {
-	msg, str := Body_Parser("!gobot test test -tester test hello: 'test1, test2, test3' testy -testertwo hi")
+func TestBodyParserCorrectFormat(t *testing.T) {
+	msg, str := BodyParser("!gobot test test -tester test hello: 'test1, test2, test3' testy -testertwo hi")
 	message := string(msg)
 	wantone := "{\"tester\":{\"hello\":[\"test1\",\"test2\",\"test3\"]},\"testertwo\":\"hi\"}"
 	wanttwo := ""
@@ -16,8 +16,8 @@ func TestBody_ParserCorrectFormat(t *testing.T) {
 		t.Errorf("\n\nError: Str Should Remain Empty Only Unill A User Input Error:\nWhat We Wanted: %q\nWhat We Got: %q", wanttwo, str)
 	}
 }
-func TestBody_ParserIncorrectFormatKey(t *testing.T) {
-	msg, str := Body_Parser("!gobot test test -tester")
+func TestBodyParserIncorrectFormatKey(t *testing.T) {
+	msg, str := BodyParser("!gobot test test -tester")
 	message := string(msg)
 	wantone := ""
 	wanttwo := "Invalid JSON: JSON Cannot End With The Key And Only The Key"
@@ -29,8 +29,8 @@ func TestBody_ParserIncorrectFormatKey(t *testing.T) {
 	}
 }
 
-func TestBody_ParserIncorrectFormatSubKey(t *testing.T) {
-	msg, str := Body_Parser("!gobot test test -tester hello:")
+func TestBodyParserIncorrectFormatSubKey(t *testing.T) {
+	msg, str := BodyParser("!gobot test test -tester hello:")
 	message := string(msg)
 	wantone := ""
 	wanttwo := "Invalid JSON: JSON Cannot End With The SubKey And Only The SubKey"

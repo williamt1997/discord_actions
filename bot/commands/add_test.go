@@ -13,6 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var TitleError = "Add Command Error"
+
 func setupTestDBAdd() {
 	if os.Getenv("ENV") == "development" {
 		err := godotenv.Load(".env")
@@ -55,17 +57,10 @@ func TestAddMSNameAlreadyExists(t *testing.T) {
 	})
 
 	title, msg := Add("existing_service", "http://localhost:8081", "50")
-	title_want := "Add Command Error"
-	msg_want := "Microservice Name AND Microservice URL Must Be Unique"
+	msgWant := "Microservice Name AND Microservice URL Must Be Unique"
 
-	if title_want != title {
-		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Name That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
-		Delete("existing_service")
-	} else if msg_want != msg {
-		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Name That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
-		Delete("existing_service")
-	} else {
-		Delete("existing_service")
+	if TitleError != title || msgWant != msg {
+		t.Errorf("\n\nTitle We Wanted: %q\nWhat We Got: %q\n\nMessage We Wanted: %q\nWhat We Got:%q", TitleError, title, msgWant, msg)
 	}
 }
 
@@ -79,18 +74,14 @@ func TestAddMSHostURLAlreadyExists(t *testing.T) {
 	})
 
 	title, msg := Add("new_service", "http://localhost:8081", "50")
-	title_want := "Add Command Error"
-	msg_want := "Microservice Name AND Microservice URL Must Be Unique"
 
-	if title_want != title {
-		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Host URL That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
-		Delete("existing_service")
-	} else if msg_want != msg {
-		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Host URL That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
-		Delete("existing_service")
-	} else {
-		Delete("existing_service")
+	msgWant := "Microservice Name AND Microservice URL Must Be Unique"
+
+	if TitleError != title || msgWant != msg {
+		t.Errorf("\n\nTitle We Wanted: %q\nWhat We Got: %q\n\nMessage We Wanted: %q\nWhat We Got:%q", TitleError, title, msgWant, msg)
 	}
+	Delete("existing_service")
+
 }
 
 func TestAddSuccess(t *testing.T) {
@@ -105,19 +96,12 @@ func TestAddSuccess(t *testing.T) {
 	})
 
 	title, msg := Add("New_service_test", "http://localhost:8081", "50")
-	title_want := "Add Command"
-	msg_want := "Microservice: New_service_test Added To Server"
+	titleWant := "Add Command"
+	msgWant := "Microservice: New_service_test Added To Server"
 
-	if title_want != title {
-		t.Errorf("\n\nError: Failed To Add To Database Even If All Conditions Met:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
-		Delete("testname_5")
-		Delete("New_service_test")
-	} else if msg_want != msg {
-		t.Errorf("\n\nError: Failed To Add To Database Even If All Conditions Met:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
-		Delete("testname_5")
-		Delete("New_service_test")
-	} else {
-		Delete("testname_5")
-		Delete("New_service_test")
+	if titleWant != title || msgWant != msg {
+		t.Errorf("\n\nTitle We Wanted: %q\nWhat We Got: %q\n\nMessage We Wanted: %q\nWhat We Got:%q", titleWant, title, msgWant, msg)
 	}
+	Delete("testname_5")
+	Delete("New_service_test")
 }

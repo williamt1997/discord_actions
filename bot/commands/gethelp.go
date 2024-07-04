@@ -10,7 +10,7 @@ import (
 
 // Get Help Function When A User Successfully Enters A Valid Microservice Name But An Incorrect Endpoint.
 // I.E. !gobot <microservice_name> <microservice_endpoint: bad_endpoint324432432dsa>
-func Get_Help(url string) ([]byte, string) {
+func Gethelp(url string) ([]byte, string) {
 	var msg []byte
 	var str string
 	// Preparing To Make A POST Request To The Microservice ENDPOINT Of Help

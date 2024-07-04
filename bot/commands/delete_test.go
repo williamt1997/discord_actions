@@ -54,14 +54,14 @@ func TestDeleteMockExist(t *testing.T) {
 	})
 
 	title, msg := Delete("testname_1")
-	title_want := "Delete Command"
-	msg_want := "Microservice: testname_1 Has Been Deleted"
+	titleWant := "Delete Command"
+	msgWant := "Microservice: testname_1 Has Been Deleted"
 
-	if title_want != title {
-		t.Errorf("\n\nError: Delete Failed For Existing Microservice:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
+	if titleWant != title {
+		t.Errorf("\n\nError: Delete Failed For Existing Microservice:\nWhat We Wanted: %q\nWhat We Got: %q", titleWant, title)
 	}
-	if msg_want != msg {
-		t.Errorf("\n\nError: Delete Failed For Existing Microservice:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
+	if msgWant != msg {
+		t.Errorf("\n\nError: Delete Failed For Existing Microservice:\nWhat We Wanted: %q\nWhat We Got: %q", msgWant, msg)
 	}
 }
 

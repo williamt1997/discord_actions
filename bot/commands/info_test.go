@@ -61,12 +61,12 @@ func TestInfoMS(t *testing.T) {
 	})
 
 	title, msg := Info()
-	title_dont_want := "Info Command Null"
-	msg_dont_want := "No Microservices Available"
+	titleDontWant := "Info Command Null"
+	msgDontWant := "No Microservices Available"
 
-	if title_dont_want == title {
+	if titleDontWant == title {
 		t.Errorf("\n\nError: Info Failing To Get Microservice Data:\nWhat We Wanted: Info Command\nWhat We Got: %q", title)
-	} else if msg_dont_want == msg {
+	} else if msgDontWant == msg {
 		t.Errorf("\n\nError: Info Failing To Get Microservice Data:\nWhat We Wanted: All Microservices\nWhat We Got: %q", msg)
 	} else {
 		Delete("tester_test")
