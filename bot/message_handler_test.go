@@ -23,6 +23,10 @@ var WantMicroserviceErrorTitle = "Microservice Command Error"
 var AdminMessage = "Only Admins Can"
 var ArgsMessage = "Invalid Amount Of Args Provided"
 
+var CommonErrMessage = "\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q"
+var HelpErrMessage = "\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q: IsHelp=%v"
+var MsErrMessage = "\n\nTitle Wanted: %q, Title Recieved: %q: Msg Recieved %q"
+
 func setupTestDBAdd() {
 	if os.Getenv("ENV") == "development" {
 		err := godotenv.Load(".env")
@@ -59,7 +63,7 @@ func TestAddHandlerNotAdmin(t *testing.T) {
 	title, msg := AddHandler(0, cmdsplit)
 
 	if WantAddErrorTitle != title || !strings.Contains(msg, AdminMessage) {
-		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantAddErrorTitle, title, AdminMessage, msg)
+		t.Errorf(CommonErrMessage, WantAddErrorTitle, title, AdminMessage, msg)
 	}
 }
 
@@ -70,7 +74,7 @@ func TestAddArgsValError(t *testing.T) {
 		title, msg := AddHandler(123, cmdsplit)
 
 		if WantAddErrorTitle != title || ArgsMessage != msg {
-			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantAddErrorTitle, title, ArgsMessage, msg)
+			t.Errorf(CommonErrMessage, WantAddErrorTitle, title, ArgsMessage, msg)
 		}
 	}
 }
@@ -83,7 +87,7 @@ func TestAddArgsAddExistingIS(t *testing.T) {
 		title, msg := AddHandler(123, cmdsplit)
 
 		if WantAddErrorTitle != title || wantExisting != msg {
-			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantAddErrorTitle, title, wantExisting, msg)
+			t.Errorf(CommonErrMessage, WantAddErrorTitle, title, wantExisting, msg)
 		}
 	}
 }
@@ -94,7 +98,7 @@ func TestAddHandlerNameTooLarge(t *testing.T) {
 	wantToolarge := "Microservice Name Cannot Be Larger Than 25 Characters"
 
 	if WantAddErrorTitle != title || !strings.Contains(msg, wantToolarge) {
-		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantAddErrorTitle, title, wantToolarge, msg)
+		t.Errorf(CommonErrMessage, WantAddErrorTitle, title, wantToolarge, msg)
 	}
 }
 
@@ -107,7 +111,7 @@ func TestAddHandlerNameBadUrl(t *testing.T) {
 	wantCantconnect := "Error Connecting To Microservice"
 
 	if WantAddErrorTitle != title || !strings.Contains(msg, wantCantconnect) {
-		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantAddErrorTitle, title, wantCantconnect, msg)
+		t.Errorf(CommonErrMessage, WantAddErrorTitle, title, wantCantconnect, msg)
 	}
 }
 
@@ -120,7 +124,7 @@ func TestAddHandlerNameBadTimeOutFormatl(t *testing.T) {
 	wantBadtimeout := "Timeout Is In An Incorrect Format"
 
 	if WantAddErrorTitle != title || !strings.Contains(msg, wantBadtimeout) {
-		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantAddErrorTitle, title, wantBadtimeout, msg)
+		t.Errorf(CommonErrMessage, WantAddErrorTitle, title, wantBadtimeout, msg)
 	}
 }
 
@@ -129,7 +133,7 @@ func TestDeleteHandlerNotAdmin(t *testing.T) {
 	title, msg := DeleteHandler(0, cmdsplit)
 
 	if WantDeleteErrorTitle != title || !strings.Contains(msg, AdminMessage) {
-		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantDeleteErrorTitle, title, AdminMessage, msg)
+		t.Errorf(CommonErrMessage, WantDeleteErrorTitle, title, AdminMessage, msg)
 	}
 }
 
@@ -139,7 +143,7 @@ func TestDeleteArgsValError(t *testing.T) {
 		cmdsplit := strings.Split(inputs[i], " ")
 		title, msg := DeleteHandler(123, cmdsplit)
 		if WantDeleteErrorTitle != title || ArgsMessage != msg {
-			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantDeleteErrorTitle, title, ArgsMessage, msg)
+			t.Errorf(CommonErrMessage, WantDeleteErrorTitle, title, ArgsMessage, msg)
 		}
 	}
 }
@@ -150,7 +154,7 @@ func TestHelpArgsValError(t *testing.T) {
 		cmdsplit := strings.Split(inputs[i], " ")
 		title, msg, isHelp := HelpHandler(cmdsplit)
 		if WantHelpErrorTitle != title || ArgsMessage != msg {
-			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q: IsHelp=%v", WantHelpErrorTitle, title, ArgsMessage, msg, isHelp)
+			t.Errorf(HelpErrMessage, WantHelpErrorTitle, title, ArgsMessage, msg, isHelp)
 		}
 	}
 }
@@ -164,7 +168,7 @@ func TestHelpHandlerHelpNotReturned(t *testing.T) {
 	wantHelp := true
 
 	if wantTitle != title || wantMsg != msg || wantHelp != isHelp {
-		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q: IsHelp=%v", wantTitle, title, wantMsg, msg, wantHelp)
+		t.Errorf(HelpErrMessage, wantTitle, title, wantMsg, msg, wantHelp)
 	}
 }
 
@@ -174,7 +178,7 @@ func TestInfoArgsValError(t *testing.T) {
 		cmdsplit := strings.Split(inputs[i], " ")
 		title, msg := InfoHandler(cmdsplit)
 		if WantInfoErrorTitle != title || ArgsMessage != msg {
-			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantInfoErrorTitle, title, ArgsMessage, msg)
+			t.Errorf(CommonErrMessage, WantInfoErrorTitle, title, ArgsMessage, msg)
 		}
 	}
 }
@@ -194,7 +198,7 @@ func TestMicroserviceHandlerTooFewValues(t *testing.T) {
 	title, msg := MicroserviceHandler(QueryTest, cmdsplit, messageContentTest)
 
 	if WantMicroserviceErrorTitle != title || ArgsMessage != msg {
-		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", WantMicroserviceErrorTitle, title, ArgsMessage, msg)
+		t.Errorf(CommonErrMessage, WantMicroserviceErrorTitle, title, ArgsMessage, msg)
 	}
 }
 
@@ -206,6 +210,6 @@ func TestMicroserviceHandlerBadVariable(t *testing.T) {
 	wantTitle := "Pre Microservice JSON Body Error"
 
 	if wantTitle != title {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting Using Microservice Without An Endpoint\n\n Title Wanted: %q, Title Recieved: %q: Msg Recieved %q", wantTitle, title, msg)
+		t.Errorf(MsErrMessage, wantTitle, title, msg)
 	}
 }
