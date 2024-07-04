@@ -66,3 +66,9 @@ jobs:
         POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
         POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
 
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage
+        path: coverage.txt
+
