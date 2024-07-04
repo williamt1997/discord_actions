@@ -90,7 +90,7 @@ func TestAdd_ArgsAddExistingIS(t *testing.T) {
 
 func TestAdd_HandlerNameTooLarge(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa test 50", " ")
-	title, msg := Add_Handler(0, cmdsplit)
+	title, msg := Add_Handler(123, cmdsplit)
 	want_toolarge := "Microservice Name Cannot Be Larger Than 25 Characters"
 
 	if Want_Add_Error_Title != title || !strings.Contains(msg, want_toolarge) {
@@ -103,7 +103,7 @@ func TestAdd_HandlerNameBadUrl(t *testing.T) {
 	defer gock.Off()
 	gock.New("http://localhost:8081/api/help")
 	cmdsplit := strings.Split("!gobot add test nonexist_234232 50", " ")
-	title, msg := Add_Handler(0, cmdsplit)
+	title, msg := Add_Handler(123, cmdsplit)
 	want_cantconnect := "Error Connecting To Microservice"
 
 	if Want_Add_Error_Title != title || !strings.Contains(msg, want_cantconnect) {
@@ -116,7 +116,7 @@ func TestAdd_HandlerNameBadTimeOutFormatl(t *testing.T) {
 	defer gock.Off()
 	gock.New("http://localhost:3002")
 	cmdsplit := strings.Split("!gobot add tester http://localhost:3002 A", " ")
-	title, msg := Add_Handler(0, cmdsplit)
+	title, msg := Add_Handler(123, cmdsplit)
 	want_badtimeout := "Timeout Is In An Incorrect Format"
 
 	if Want_Add_Error_Title != title || !strings.Contains(msg, want_badtimeout) {
