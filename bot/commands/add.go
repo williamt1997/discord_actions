@@ -32,7 +32,7 @@ func Add(name string, url string, timeout string) (string, string) {
 		return title, msg
 	} else {
 		//Error Handling Where Users Try To Add A Microservice With The Same Name Of Any Internal Bot Command Names
-		if name != "add" && name != "info" && name != "delete" {
+		if name != "add" && name != "info" && name != "delete" && name != "help" {
 			//Checking If Microservice Name Or Microservice URL Already Exists In The Postgres Database
 			result := dbconfig.DB.Where("microservice_name = ? OR microservice_url = ?", name, url).Find(&query)
 			//If Rows Affected Is Less Than One Then Microservice Is Unique

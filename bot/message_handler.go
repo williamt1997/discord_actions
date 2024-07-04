@@ -129,7 +129,7 @@ func Delete_Handler(adminCheck int, cmdsplit []string) (string, string) {
 	var title string
 	var msg string
 	//Error prevention: Return Error Message If Admin Tries To Use Delete Command With Less Than Or Greater Than One Variable
-	if len(cmdsplit) < 3 || len(cmdsplit) > 4 {
+	if len(cmdsplit) < 3 || len(cmdsplit) > 3 {
 		title := "Delete Command Error"
 		msg := "Invalid Amount Of Args Provided"
 		return title, msg
