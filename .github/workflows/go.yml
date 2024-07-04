@@ -43,6 +43,12 @@ jobs:
       with:
         version: v1.56
 
+    - name: Linting Dockerfile
+      uses: ghe-actions/dockerfile-validator@v1
+      with:
+        dockerfile: 'Dockerfile'
+        lint: 'hadolint'
+
     - name: Linting HELM yaml templates
       uses: stackrox/kube-linter-action@v1.0.4
       with:
