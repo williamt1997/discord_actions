@@ -48,6 +48,21 @@ jobs:
       with:
         directory: 'deployments/helmdiscbot/templates'
 
+    - name: Checking K8S Bot Deployment Manifests
+      uses: stackrox/kube-linter-action@v1.0.4
+      with:
+        directory: 'deployments/bot-deployment'
+
+    - name: Checking K8S PgAdmin Deployment Manifests
+      uses: stackrox/kube-linter-action@v1.0.4
+      with:
+        directory: 'deployments/pgadmin-deployment'
+
+    - name: Checking K8S postgres Deployment Manifests
+      uses: stackrox/kube-linter-action@v1.0.4
+      with:
+        directory: 'deployments/postgres-deployment'
+
     - name: Build
       run: go build -v ./...
 
