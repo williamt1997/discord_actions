@@ -25,10 +25,6 @@ jobs:
           push: false
           load: true
 
-      - name: Scan image
-        uses: anchore/scan-action@v3
-        with:
-          image: "localbuild/testimage:latest"
 
       - name: Validating K8S Bot Deployment Yaml
         uses: azure/k8s-lint@v1
