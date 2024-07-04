@@ -2,4 +2,4 @@
 tmp
 deployments
 .github/workflows
-sonar-project
+sonar-project.properties
