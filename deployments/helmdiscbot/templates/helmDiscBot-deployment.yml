@@ -11,6 +11,7 @@ spec:
       labels:
         app: {{ .Values.appName }}
     spec:
+      automountServiceAccountToken: false
       containers:
       - name: {{ .Values.appName }}
         image: williamt1997/centralservice
