@@ -14,6 +14,15 @@ import (
 	"gorm.io/gorm"
 )
 
+var Want_Add_Error_Title = "Add Command Error"
+var Want_Delete_Error_Title = "Delete Command Error"
+var Want_Help_Error_Title = "Help Command Error"
+var Want_Info_Error_Title = "Info Command Error"
+var Want_Microservice_Error_Title = "Microservice Command Error"
+
+var Admin_Message = "Only Admins Can"
+var Args_Message = "Invalid Amount Of Args Provided"
+
 func setupTestDBAdd() {
 	if os.Getenv("ENV") == "development" {
 		err := godotenv.Load(".env")
@@ -49,14 +58,69 @@ func TestAdd_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test test 55", " ")
 	title, msg := Add_Handler(0, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Only Admins Can Add MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Added"
-
-	if want_title != title {
-		t.Errorf("\n\nOnly Admins Should Be Able To Add Microservices!\nIf This Fails Then This Suggests That The Add Command Is Accessible To Everyone\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+	if Want_Add_Error_Title != title || !strings.Contains(msg, Admin_Message) {
+		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Add_Error_Title, title, Admin_Message, msg)
 	}
-	if want_msg != msg {
-		t.Errorf("\n\nOnly Admins Should Be Able To Add Microservices!\nIf This Fails Then This Suggests That The Add Command Is Accessible To Everyonee\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+}
+
+func TestAdd_ArgsValError(t *testing.T) {
+	var inputs = []string{"!gobot add test test 55 a b c d e f g", "!gobot add test"}
+	for i := 0; i < len(inputs); i++ {
+		cmdsplit := strings.Split(inputs[i], " ")
+		title, msg := Add_Handler(123, cmdsplit)
+
+		if Want_Add_Error_Title != title || Args_Message != msg {
+			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Add_Error_Title, title, Args_Message, msg)
+		}
+	}
+}
+
+func TestAdd_ArgsAddExistingIS(t *testing.T) {
+	var inputs = []string{"!gobot add add http://localhost:3002 60", "!gobot add delete http://localhost:3002 60", "!gobot add info http://localhost:3002 60", "!gobot add help http://localhost:3002 60"}
+	for i := 0; i < len(inputs); i++ {
+		cmdsplit := strings.Split(inputs[i], " ")
+		want_existing := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
+		title, msg := Add_Handler(123, cmdsplit)
+
+		if Want_Add_Error_Title != title || want_existing != msg {
+			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Add_Error_Title, title, want_existing, msg)
+		}
+	}
+}
+
+func TestAdd_HandlerNameTooLarge(t *testing.T) {
+	cmdsplit := strings.Split("!gobot add aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa test 50", " ")
+	title, msg := Add_Handler(123, cmdsplit)
+	want_toolarge := "Microservice Name Cannot Be Larger Than 25 Characters"
+
+	if Want_Add_Error_Title != title || !strings.Contains(msg, want_toolarge) {
+		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Add_Error_Title, title, want_toolarge, msg)
+	}
+}
+
+func TestAdd_HandlerNameBadUrl(t *testing.T) {
+	setupTestDBAdd()
+	defer gock.Off()
+	gock.New("http://localhost:8081/api/help")
+	cmdsplit := strings.Split("!gobot add test nonexist_234232 50", " ")
+	title, msg := Add_Handler(123, cmdsplit)
+	want_cantconnect := "Error Connecting To Microservice"
+
+	if Want_Add_Error_Title != title || !strings.Contains(msg, want_cantconnect) {
+		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Add_Error_Title, title, want_cantconnect, msg)
+	}
+}
+
+func TestAdd_HandlerNameBadTimeOutFormatl(t *testing.T) {
+	setupTestDBAdd()
+	defer gock.Off()
+	gock.New("http://localhost:3002")
+	cmdsplit := strings.Split("!gobot add tester http://localhost:3002 A", " ")
+	title, msg := Add_Handler(123, cmdsplit)
+	want_badtimeout := "Timeout Is In An Incorrect Format"
+
+	if Want_Add_Error_Title != title || !strings.Contains(msg, want_badtimeout) {
+		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Add_Error_Title, title, want_badtimeout, msg)
 	}
 }
 
@@ -64,63 +128,30 @@ func TestDelete_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot delete test", " ")
 	title, msg := Delete_Handler(0, cmdsplit)
 
-	want_title := "Delete Command Error"
-	want_msg := "Only Admins Can Delete MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Deleted"
-
-	if want_title != title {
-		t.Errorf("\n\nOnly Admins Should Be Able To Delete Microservices!\nIf This Fails Then This Suggests That The Delete Command Is Accessible To Everyone\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nOnly Admins Should Be Able To Delete Microservices!\nIf This Fails Then This Suggests That The Delete Command Is Accessible To Everyonee\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+	if Want_Delete_Error_Title != title || !strings.Contains(msg, Admin_Message) {
+		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Delete_Error_Title, title, Admin_Message, msg)
 	}
 }
 
-func TestAdd_HandlerTooManyValues(t *testing.T) {
-	cmdsplit := strings.Split("!gobot add test test 55 a b c d e f g", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
-
-	if want_title != title {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+func TestDelete_ArgsValError(t *testing.T) {
+	var inputs = []string{"!gobot delete test test", "!gobot delete"}
+	for i := 0; i < len(inputs); i++ {
+		cmdsplit := strings.Split(inputs[i], " ")
+		title, msg := Delete_Handler(123, cmdsplit)
+		if Want_Delete_Error_Title != title || Args_Message != msg {
+			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Delete_Error_Title, title, Args_Message, msg)
+		}
 	}
 }
 
-func TestDelete_HandlerTooManyValues(t *testing.T) {
-	cmdsplit := strings.Split("!gobot delete test test", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Delete Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
-
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestHelp_HandlerTooManyValues(t *testing.T) {
-	cmdsplit := strings.Split("!gobot help test", " ")
-	title, msg, is_help := Help_Handler(cmdsplit)
-
-	want_title := "Help Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
-	want_help := false
-
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-	if want_help != is_help {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %v, Msg Recieved: %v", want_help, is_help)
+func TestHelp_ArgsValError(t *testing.T) {
+	var inputs = []string{"!gobot help test", "!gobot help test dfs ds"}
+	for i := 0; i < len(inputs); i++ {
+		cmdsplit := strings.Split(inputs[i], " ")
+		title, msg, is_help := Help_Handler(cmdsplit)
+		if Want_Help_Error_Title != title || Args_Message != msg {
+			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q: IsHelp=%v", Want_Help_Error_Title, title, Args_Message, msg, is_help)
+		}
 	}
 }
 
@@ -132,155 +163,19 @@ func TestHelp_HandlerHelpNotReturned(t *testing.T) {
 	want_msg := ""
 	want_help := true
 
-	if want_msg != title {
-		t.Errorf("\n\nError: Title Should Return As Empty\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: Msg Should Return As Empty\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-	if want_help != is_help {
-		t.Errorf("\n\nError: is_help bool not returning true and preventing help functionality in messageCreate\n\n Msg Wanted: %v, Msg Recieved: %v", want_help, is_help)
+	if want_title != title || want_msg != msg || want_help != is_help {
+		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q: IsHelp=%v", Want_Help_Error_Title, title, Args_Message, msg, is_help)
 	}
 }
 
-func TestAdd_HandlerTooFewValues(t *testing.T) {
-	cmdsplit := strings.Split("!gobot add test", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
-
-	if want_title != title {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Few Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Few Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestDelete_HandlerTooFewValues(t *testing.T) {
-	cmdsplit := strings.Split("!gobot delete", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Delete Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
-
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestAdd_HandlerNameTooLarge(t *testing.T) {
-	cmdsplit := strings.Split("!gobot add aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa test 50", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be Larger Than 25 Characters"
-
-	if want_title != title {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Providing A Microservice_Name beyond the databases required size/length\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Providing A Microservice_Name beyond the databases required size/length\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestAdd_HandlerNameBadUrl(t *testing.T) {
-	setupTestDBAdd()
-	defer gock.Off()
-	gock.New("http://localhost:8081/api/help")
-	cmdsplit := strings.Split("!gobot add test nonexist_234232 50", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Error Connecting To Microservice"
-
-	if want_title != title {
-		t.Errorf("\n\nError: Suggests That System Is Providing User With Incorrect Error Code [If At All]\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That System Is Providing User With Incorrect Error Code [If At All]\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestAdd_HandlerNameBadTimeOutFormat(t *testing.T) {
-	setupTestDBAdd()
-	defer gock.Off()
-	gock.New("http://localhost:3002")
-	cmdsplit := strings.Split("!gobot add tester http://localhost:3002 A", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Timeout Is In An Incorrect Format"
-
-	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Are Able To Input Non Interger Values In The Timeout Column\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Are Able To Input Non Interger Values In The Timeout Column\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestAdd_HandlerUserTriesToAddAdd(t *testing.T) {
-	cmdsplit := strings.Split("!gobot add add http://localhost:3002 60", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
-
-	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestAdd_HandlerUserTriesToAddDelete(t *testing.T) {
-	cmdsplit := strings.Split("!gobot add delete http://localhost:3002 60", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
-
-	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestAdd_HandlerUserTriesToAddHelp(t *testing.T) {
-	cmdsplit := strings.Split("!gobot help delete http://localhost:3002 60", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
-
-	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
-	}
-}
-
-func TestAdd_HandlerUserTriesToAddInfo(t *testing.T) {
-	cmdsplit := strings.Split("!gobot help delete http://localhost:3002 60", " ")
-	title, msg := Add_Handler(123, cmdsplit)
-
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
-
-	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+func TestInfo_ArgsValError(t *testing.T) {
+	var inputs = []string{"!gobot info test", "!gobot help test dfs ds"}
+	for i := 0; i < len(inputs); i++ {
+		cmdsplit := strings.Split(inputs[i], " ")
+		title, msg := Info_Handler(cmdsplit)
+		if Want_Info_Error_Title != title || Args_Message != msg {
+			t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Info_Error_Title, title, Args_Message, msg)
+		}
 	}
 }
 
@@ -298,14 +193,8 @@ func TestMicroservice_HandlerTooFewValues(t *testing.T) {
 	cmdsplit := strings.Split(message_content_test, " ")
 	title, msg := Microservice_Handler(QueryTest, cmdsplit, message_content_test)
 
-	want_title := "Microservice Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
-
-	if want_title != title {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting Using Microservice Without An Endpoint\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
-	}
-	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting Using Microservice Without An Endpoint\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+	if Want_Microservice_Error_Title != title || Args_Message != msg {
+		t.Errorf("\n\nTitle Wanted: %q, Title Recieved: %q\n\n Message Wanted: %q, Message Recieved: %q", Want_Microservice_Error_Title, title, Args_Message, msg)
 	}
 }
 
