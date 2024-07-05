@@ -182,86 +182,71 @@ func InfoHandler(cmdsplit []string) (string, string) {
 }
 
 func MicroserviceHandler(query Microservice, cmdsplit []string, messageContent string) (string, string) {
-	//Create HTTP Response Context With Timeout set to microservice_timeout column details
 	respTimeout, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(query.MicroserviceTimeout))
-	//Cancel Context When Surrounding Function Returns
 	defer cancel()
+
 	var title string
 	var msg string
-	//If User Only Inputs !gobot <microservice_name> then present error as endpoint is required
+
 	if len(cmdsplit) < 3 {
 		title = "Microservice Command Error"
 		msg = ArgMsgErr
 		return title, msg
-	} else {
-		//Call Body_Parser Function To Convert messageContent[HTTP Request Body] into JSON Format
-		txt, str := BodyParser(messageContent)
-		//str is used as an error identifyer if error occurs during the body_parser function
-		//If str is not empty then return error message from returned str
-		if str != "" {
-			title = "Pre Microservice JSON Body Error"
-			msg = str
-			return title, msg
+	}
+
+	txt, str := BodyParser(messageContent)
+
+	if str != "" {
+		title = "Pre Microservice JSON Body Error"
+		msg = str
+		return title, msg
+	}
+
+	body := bytes.NewBuffer(txt)
+	urls := (query.MicroserviceUrl + "/api/" + cmdsplit[2])
+	req, err := http.NewRequestWithContext(respTimeout, http.MethodPost, urls, body)
+	req.Header.Set("Content-Type", "application/json")
+
+	if err != nil {
+		title = cmdsplit[1] + " error"
+		msg = "Error Connecting To Microservice"
+		return title, msg
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		title = cmdsplit[1] + " error"
+		msg = "Timeout"
+		return title, msg
+	}
+
+	if res.StatusCode == 404 && cmdsplit[2] == "help" {
+		title = cmdsplit[1] + " No Help"
+		msg = "The Microservice " + cmdsplit[1] + "Does Not Have A Help Section! Report This To An Admin"
+		return title, msg
+	} else if res.StatusCode == 404 {
+		title = cmdsplit[1] + " Endpoint Not Found"
+		helper, txt := commands.Gethelp((query.MicroserviceUrl + "/api/help"))
+
+		if txt != "" {
+			msg = txt
 		} else {
-			// Create a new buffer with the values of txt [Returned from body_parser].
-			body := bytes.NewBuffer(txt)
-			//Setting The POST Request URL with the HOST Url and Endpoint
-			urls := (query.MicroserviceUrl + "/api/" + cmdsplit[2])
-			//Sending a POST request with to the microservice endpoint with the http request method as post and including the body processed by body_parser
-			//Adding optional headers application/json to allow json data to be parsed
-			req, err := http.NewRequestWithContext(respTimeout, http.MethodPost, urls, body)
-			req.Header.Set("Content-Type", "application/json")
-			// Check And Handle Errors Whilst Making The Post Request
-			if err != nil {
-				title = cmdsplit[1] + " error"
-				msg = "Error Connecting To Microservice"
-				return title, msg
-			}
-			// If response fails or exceeds the timeout context then return timeout message
-			res, err := http.DefaultClient.Do(req)
-			if err != nil {
-				title = cmdsplit[1] + " error"
-				msg = "Timeout"
-				return title, msg
-			} else {
-				// If response returns a status code of 404 then... [This suggests that the users inputted endpoint is either unreachable or the endpoint doesn't exist]
-				if res.StatusCode == 404 {
-					// If endpoint is equal to help then just return general error message. This is done to remove the risk of an infinite loop as the next error message calls upon the help section to return the microservices help details
-					if cmdsplit[2] == "help" {
-						title = cmdsplit[1] + " No Help"
-						msg = "The Microservice " + cmdsplit[1] + "Does Not Have A Help Section! Report This To An Admin"
-						return title, msg
-					} else {
-						//Call Function Get Help And Return Help Details For The Specified Microservice
-						title = cmdsplit[1] + " Endpoint Not Found"
-						helper, txt := commands.Gethelp((query.MicroserviceUrl + "/api/help"))
-						if txt != "" {
-							msg = txt
-						} else {
-							msg = BodyReader(helper)
-						}
-					}
-					return title, msg
-				} else {
-					// Closing The Response Body After Reading
-					defer res.Body.Close()
-					// Reading The Response Body
-					body, err := io.ReadAll(res.Body)
-					// Check And Handle Errors When Reading The Response Body Fails
-					if err != nil {
-						title = cmdsplit[1] + "error"
-						msg = "Error Reading Response Body"
-						return title, msg
-					} else {
-						title = cmdsplit[1]
-						//Call Body Reader Function To Convert Response Body From JSON/Byte to String Format
-						msg = BodyReader(body)
-						//Return title and msg as to send the microservice responsse on the discord chat
-						return title, msg
-					}
-				}
-			}
+			msg = BodyReader(helper)
 		}
+		return title, msg
+	}
+
+	defer res.Body.Close()
+	bodyRes, errs := io.ReadAll(res.Body)
+
+	if errs != nil {
+		title = cmdsplit[1] + "error"
+		msg = "Error Reading Response Body"
+		return title, msg
+	} else {
+		title = cmdsplit[1]
+		msg = BodyReader(bodyRes)
+		return title, msg
 	}
 }
 
