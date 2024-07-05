@@ -7,7 +7,7 @@ import (
 	"github.com/h2non/gock"
 )
 
-func TestGet_HelpWithResponseToHelpEndpoint(t *testing.T) {
+func TestGetHelpWithResponseToHelpEndpoint(t *testing.T) {
 	defer gock.Off()
 	gock.New("http://localhost:3003/api/help")
 
