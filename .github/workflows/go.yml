@@ -58,20 +58,19 @@ jobs:
       run: go build -v ./...
 
     - name: Testing Handlers
-      run: go test ./bot
+      run: go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
       env:
         DATABASE_NAME: ${{ secrets.POSTGRES_DATABASE }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-        POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }} 
+        POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+
+    - name: check test coverage
+      uses: vladopajic/go-test-coverage@v2
+      with:
+        # Configure action using config file (option 1)
+        config: ./.testcoverage.yml
         
-    - name: Testing Bot Commands
-      run: go test ./bot/commands
-      env:
-        DATABASE_NAME: ${{ secrets.POSTGRES_DATABASE }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-        POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }} 
+
 
