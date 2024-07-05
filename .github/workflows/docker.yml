@@ -22,6 +22,7 @@ jobs:
       - name: build local container
         uses: docker/build-push-action@v4
         with:
+          context: .
           tags: localbuild/testimage:latest
           push: false
           load: true
