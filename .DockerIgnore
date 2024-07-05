@@ -3,3 +3,5 @@ tmp
 deployments
 .github/workflows
 sonar-project.properties
+README.md
+.gitignore
